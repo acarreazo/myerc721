@@ -33,6 +33,10 @@ contract Token is IERC721, ERC165, SafeMath {
     // Mapping from owner to operator approvals
     mapping (address => mapping (address => bool)) private operatorApprovals;
 
+    event tokenEat(uint tokenInd, uint power); // add power
+    event tokenWalk(uint tokenId, uint power); // less power
+    event tokenPlay(uint tokenId);
+    
     // Create random Token from string (name) and DNA
     function _createToken(string memory _name, uint _dna)
         internal
@@ -269,6 +273,58 @@ contract Token is IERC721, ERC165, SafeMath {
         }
         require(result);
         _;
+    }
+
+    function eat(_tokenId,_power) public{
+       token[_tokenInd].power.add(_power);
+       emit tokenEat(_tokenId, _power);
+    }
+    
+    function walk(_tokenId,_power) public{
+       token[_tokenInd].power.sub(_power);
+       emit tokenWalk(_tokenId, _power);
+    }
+    
+    function play(_tokenInd) public{
+ 
+        uint random = getRandom();
+        uint morepower;
+        if(random > 10 ){
+           morepower = 100;
+           token[_tokenInd].rarityLevel.add(getRarity());
+        }else{
+           morepower = 10;
+        }
+      
+       token[_tokenInd].power.add(morepower);
+       emit tokenPlay(_tokenId);
+    }
+    
+    // Get random numbers
+    function getRandom() private returns (uint)
+    {
+        uint random = uint(keccak256(now, msg.sender, randNonce)) % 100;
+        randNonce++;
+        return random;
+    }
+    
+    
+    function getRarity() private view returns(uint32)
+    {
+        // Generating random numbers
+        uint random = getRandom();
+        // Get 1-5 different rarity according to scale.
+        if(random <= 5)
+            return 5;
+        else if(random <= 15 && random > 5)
+            return 4;
+        else if(random <= 30 && random >15)
+            return 3;
+        else if(random <= 50 && random > 30)
+            return 2;
+        else
+            return 1;
+            
     }
 
     // Returns whether the target address is a contract
