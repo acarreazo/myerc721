@@ -17,6 +17,8 @@ contract Token is IERC721, ERC165, SafeMath {
     struct Token {
         string name;
         uint dna;
+	uint rarityLevel;  // 1 = normal, 2 = rare, 3 = epic, 4 = legendary
+        uint power;
     }
 
     Token[] public tokens;
@@ -43,7 +45,7 @@ contract Token is IERC721, ERC165, SafeMath {
         isUnique(_name, _dna)
     {
         // Add Token to array and get id
-        uint id = safeSub(tokens.push(Token(_name, _dna)), 1);
+	uint id = safeSub(tokens.push(Token(_name, _dna,1,0)), 1); // Token ("Dragon",5,1,0)
         // Map owner to id of Token
         assert(tokenToOwner[id] == address(0));
         tokenToOwner[id] = msg.sender;
